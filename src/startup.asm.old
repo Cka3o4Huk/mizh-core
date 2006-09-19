@@ -1,0 +1,61 @@
+[SECTION .text]
+[BITS 32]
+
+_main:
+;	mov esi,0x200000
+;	sub esi,_main
+
+;	mov eax,esi
+
+	mov eax,[_dir_entry]
+
+	push eax
+	mov eax,[_temp]
+	push eax
+
+[extern _init_memory]
+	call _init_memory
+
+	jmp $
+
+;	mov esi,[_hello]
+;	mov edi,0xb8000
+;	mov ecx,6
+;	rep movsb
+
+;	jmp $	
+
+;	pop eax
+
+;	mov eax,[_dir_entry]	
+
+;	mov cr3,eax
+;	mov eax,cr0
+;	or  eax,0x80000000
+;	mov cr0,eax
+;
+;	mov esi,[_hello]
+;	mov edi,0xb8000
+;	mov ecx,6
+;	rep movsb 
+
+[extern _k_main]
+	jmp _k_main
+
+[SECTION .data]
+_hello:
+	db 'A',7,'B',7,'C',7
+
+[SECTION .bss]
+
+_dir_entry: 
+	resb 4096
+_krn_table:
+	resb 4096
+_frst_tbl:
+	resb 4096
+	resb 4096
+_temp:	
+	resd 4
+
+	
