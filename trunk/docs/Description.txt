@@ -1,0 +1,8 @@
+The primary goal is researching the fast and modular OS kernel.
+Main problems planning to solve is minimization count of syscalls
+and content switching. Also it will be realize flexible model 
+of independent layers of kernels.
+
+Initial layers is hardware, core, platform and application. 
+This all must be provide flexible access to different features 
+and functions of microkernel.
