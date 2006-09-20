@@ -2,9 +2,9 @@
 #include "include/idt.h"
 #include "include/kbr.h"
 
-#define IRQ_HANDLER(func) void func (void);\
- asm("\n_" #func ":cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
- void _ ## func(void)
+#define IRQ_HANDLER(func) void func(void);\
+ asm("\n_"#func":cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ void __##func(void)
 
 void dummy_intr();
 asm("\n_dummy_intr:\n movb $0x20,%al\n	outb %al,$0x20 \n iretl");
@@ -26,10 +26,6 @@ void gets(char* s,int size){
 	buf=NULL;
 	count=0;
 	enable_intr();
-}
-
-void* get_keyboard_handler(){
-	return &irq_keyboard;
 }
 
 IRQ_HANDLER(irq_keyboard){
@@ -72,4 +68,8 @@ IRQ_HANDLER(irq_keyboard){
 	creg = inportb(0x61);
 	creg|=1;
 	outportb(0x61,creg);
+}
+
+void* get_keyboard_handler(){
+	return &irq_keyboard;
 }

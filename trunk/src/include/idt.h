@@ -3,7 +3,7 @@
 
 #define IRQ_MASTER_HANDLER(func) void func (void);\
  asm("\n_" #func ":cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
- void _ ## func(void)
+ void __## func(void)
 
 #define CODE_SELECTOR 	0x08
 
