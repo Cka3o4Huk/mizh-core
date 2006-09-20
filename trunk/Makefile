@@ -11,8 +11,6 @@ load2: core
 
 core:
 	@echo "###### Compiling core files"
-	@echo "Current dir ${.CURDIR}"
-	chdir ${.CURDIR}
 	make -C ./src -f ./Makefile all
 
 clean_obj:
