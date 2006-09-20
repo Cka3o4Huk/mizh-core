@@ -1,11 +1,11 @@
 .SUFFIXES: .asm
 
-OBJECTS = startup.c mm.c core.c tty.c kbr.c dev\hdd.c idt.c st_lib.c debug.c cmd.c
+OBJECTS = startup.c mm.c core.c tty.c kbr.c dev/hdd.c idt.c st_lib.c debug.c cmd.c
 FLAGS = -ffreestanding -c
 W_ASM = nasmw
 ASM = nasm
 BUILD_DIR = obj
-
+MAKER = gmake
 
 all: core
 
@@ -19,11 +19,12 @@ clean_obj:
 
 .asm.o: 
 	@echo "###### Compiling asm file... $@"	
-	@${ASM} -f bin -o ..\${BUILD_DIR}\$@ $<
+	@${ASM} -f bin -o ../${BUILD_DIR}/$@ $<
 
 core: init_dir ${OBJECTS:.c=.o}
-	ld -Ttext 0x200000 -o ..\core $(addprefix ..\$(BUILD_DIR)\,$(OBJECTS:.c=.o))
-	objcopy ..\core -O binary
+	@echo $(join a b,.c .o)
+	ld -Ttext 0x200000 -o ../core $(addprefix ../${BUILD_DIR}/,${OBJECTS:.c=.o})
+	objcopy ../core -O binary
 
 startup.o: startup.c
 
