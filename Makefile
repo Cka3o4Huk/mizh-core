@@ -9,7 +9,10 @@ all: boot.asm load2
 load2: core
 	$(ASM) -fbin -o load2 bootload.asm
 
-core: 
+core:
+	@echo "###### Compiling core files"
+	@echo "Current dir ${.CURDIR}"
+	chdir ${.CURDIR}
 	make -C ./src -f ./Makefile all
 
 clean_obj: 

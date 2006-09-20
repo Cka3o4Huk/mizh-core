@@ -9,11 +9,9 @@ BUILD_DIR = obj
 
 all: core
 
-clean_obj: 
-	if exist ../$(BUILD_DIR)/
-	del $(addprefix ..\$(BUILD_DIR)\,$(OBJECTS:.c=.o))
-	if exist ..\$(BUILD_DIR)\dev rmdir ..\$(BUILD_DIR)\dev
-	if exist ..\$(BUILD_DIR) rmdir ..\$(BUILD_DIR)
+clean_obj:
+	rm -rf ../${BUILD_DIR}/dev
+	rm -rf ../${BUILD_DIR}
 
 .c.o:
 	@echo "###### Compiling file $< to $@"
