@@ -15,9 +15,10 @@ core:
 	chdir ${.CURDIR}
 	make -C ./src -f ./Makefile all
 
-clean_obj: 
-	make -C ./src -f ./Makefile clean_obj
-	del load2
-	del core
+clean_obj:
+	@echo "###### Clean all" 
+	rm -rf ${.CURDIR}/obj
+	rm -f load2
+	rm -f core
 clean:  clean_obj
-	del loader
+	rm -f loader
