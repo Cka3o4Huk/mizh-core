@@ -115,4 +115,5 @@ void clear_memory(unsigned char *start,unsigned long size){
 
 void core_alloc(w_dword size){
     
+}
 

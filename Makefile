@@ -15,4 +15,4 @@ clean_obj:
 	del load2
 	del core
 clean:  clean_obj
-	del loader	
+	del loader
