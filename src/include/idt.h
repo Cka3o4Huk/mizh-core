@@ -1,9 +1,19 @@
 #include "addr.h"
 #include "common.h"
+ 
+#ifdef _FREEBSD
 
-#define IRQ_MASTER_HANDLER(func) void func (void);\
- asm("\n_" #func ":cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
- void __## func(void)
+	#define IRQ_MASTER_HANDLER(func) void func(void);\
+ 	asm("\n .globl " #func"\n .type   " #func", @function\n" #func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ 	void __##func(void)
+
+#else
+
+	#define IRQ_MASTER_HANDLER(func) void func(void);\
+ 	asm("\n_" #func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ 	void _##func(void)
+
+#endif
 
 #define CODE_SELECTOR 	0x08
 
