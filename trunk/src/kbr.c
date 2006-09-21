@@ -2,9 +2,21 @@
 #include "include/idt.h"
 #include "include/kbr.h"
 
-#define IRQ_HANDLER(func) void func(void);\
- asm("\n_"#func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
- void __##func(void)
+#ifdef _FREEBSD
+
+	#define IRQ_HANDLER(func) void func(void);\
+ 	asm("\n .globl " #func"\n .type   " #func", @function\n" #func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ 	void __##func(void)
+
+#else
+
+	#define IRQ_HANDLER(func) void func(void);\
+ 	asm("\n_" #func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ 	void _##func(void)
+
+#endif
+
+
 
 void dummy_intr();
 asm("\n_dummy_intr:\n movb $0x20,%al\n	outb %al,$0x20 \n iretl");

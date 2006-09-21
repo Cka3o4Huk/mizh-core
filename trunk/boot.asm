@@ -122,7 +122,7 @@ printhex:
 	mov al,[hex_table+bx]
 	call putc
 	
-	popa 
+	popa
 	ret
 
 putc:
@@ -154,11 +154,4 @@ msg_fatal:
 times 510-($-$$) db 0
 db 0xaa,0x55
 	incbin 'load2'
-	
- 
-
-	
-
-
-	
 	

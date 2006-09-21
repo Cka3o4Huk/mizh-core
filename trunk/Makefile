@@ -3,9 +3,9 @@ UNIX_ASM = nasm
 ifeq (${OS},Windows_NT)
 SHEEL = cmd.exe
 MAKER = make
-ASM = W_ASM
+ASM = $(W_ASM)
 else
-ASM = UNIX_ASM
+ASM = $(UNIX_ASM)
 MAKER = gmake
 endif
 

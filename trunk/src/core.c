@@ -6,7 +6,7 @@ void k_init_ata(){
     if(ata_detect(0x1f0,0x00)==0){
         if(ata_info(0x1f0,0x00)!=0) 
             printf("HDD: Timeout or another error occupied\n");          
-            call_stack_out();
+            //call_stack_out();
     }else{
         printf("HDD isn't detected\n");
     }
