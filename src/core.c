@@ -1,6 +1,6 @@
 #include "include/idt.h"
 
-char str[80];
+//char str[80];
 
 void k_init_ata(){
     if(ata_detect(0x1f0,0x00)==0){

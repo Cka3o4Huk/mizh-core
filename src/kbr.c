@@ -3,7 +3,7 @@
 #include "include/kbr.h"
 
 #define IRQ_HANDLER(func) void func(void);\
- asm("\n_"#func":cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
+ asm("\n_"#func":\n cli\n pusha\n call __" #func "\n movb $0x20, %al \n outb %al, $0x20\n popa\n sti\n iret\n");\
  void __##func(void)
 
 void dummy_intr();
