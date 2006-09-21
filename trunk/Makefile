@@ -24,7 +24,7 @@ core:
 
 clean_obj:
 	@echo "###### Clean all" 
-	rm -rf ${.CURDIR}/obj
+	rm -rf ./obj
 	rm -f load2
 	rm -f core
 clean:  clean_obj
