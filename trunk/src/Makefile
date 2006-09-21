@@ -21,7 +21,7 @@ clean_obj:
 	@echo "###### Compiling asm file... $@"	
 	@${ASM} -f bin -o ../${BUILD_DIR}/$@ $<
 
-core: init_dir ${OBJECTS:.c=.o}
+core: init_dir ${OBJECTS:.c=.o}	
 	ld -Ttext 0x200000 -o ../core $(addprefix ../${BUILD_DIR}/,${OBJECTS:.c=.o})
 	objcopy ../core -O binary
 

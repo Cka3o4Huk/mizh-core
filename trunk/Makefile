@@ -3,9 +3,16 @@ UNIX_ASM = nasm
 ASM = UNIX_ASM
 MAKER = gmake
 
-all: boot.asm load2
+
+all: init_make boot.asm load2
 	$(ASM) -fbin -o loader boot.asm
 	$(MAKER) clean_obj
+
+init_make:
+	ifeq (${OS},Windows_NT)
+	@echo "Winda iiiiii"
+	endif
+	@echo "OS: ${OS}"
 
 load2: core
 	$(ASM) -fbin -o load2 bootload.asm
