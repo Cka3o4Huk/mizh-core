@@ -22,7 +22,6 @@ clean_obj:
 	@${ASM} -f bin -o ../${BUILD_DIR}/$@ $<
 
 core: init_dir ${OBJECTS:.c=.o}
-	@echo $(join a b,.c .o)
 	ld -Ttext 0x200000 -o ../core $(addprefix ../${BUILD_DIR}/,${OBJECTS:.c=.o})
 	objcopy ../core -O binary
 
