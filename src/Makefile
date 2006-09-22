@@ -1,11 +1,12 @@
 .SUFFIXES: .asm
 
-OBJECTS = startup.c mm.c core.c tty.c kbr.c dev/hdd.c idt.c st_lib.c debug.c cmd.c
+OBJECTS = startup.c mm/mm.c kernel/core.c tty.c dev/kbr.c dev/hdd.c idt.c lib/st_lib.c lib/debug.c cmd.c
 FLAGS = -ffreestanding -c
 W_ASM = nasmw
 ASM = nasm
 OBJ_DIR = obj
 MAKER = gmake
+INCLUDE = include
 
 ifeq (${OS},Windows_NT)
 WINNT = yes
@@ -13,7 +14,7 @@ else
 UNIX = yes
 endif
 
-SUBDIRS = dev
+SUBDIRS = dev mm kernel lib
 
 all: core
 
@@ -23,7 +24,7 @@ clean_obj:
 
 .c.o:
 	@echo "###### Compiling file $< to $@"
-	@gcc ${FLAGS} -o ../${OBJ_DIR}/$@ ./$<
+	@gcc ${FLAGS} -I${INCLUDE} -o ../${OBJ_DIR}/$@ ./$<
 
 .asm.o: 
 	@echo "###### Compiling asm file... $@"	
@@ -37,16 +38,14 @@ startup.o: startup.c
 
 init_dir: 
 	@echo "###### Initializing directories..."
-ifdef WINNT
-	
+ifdef WINNT	
 	mkdir ..\$(OBJ_DIR)
-	$(foreach dir,$(SUBDIRS),mkdir ..\$(OBJ_DIR)\$(dir))
-
+	$(foreach dir,$(SUBDIRS),mkdir ..\$(OBJ_DIR)\$(dir);)
 endif
 
 ifdef UNIX
 	mkdir -p ../${OBJ_DIR}
-	mkdir -p ../${OBJ_DIR}/dev/
+	$(foreach dir,$(SUBDIRS),mkdir -p ../$(OBJ_DIR)/$(dir);)
 endif
 
 
