@@ -1,4 +1,4 @@
-#include "include/idt.h"
+#include "idt.h"
 
 //char str[80];
 

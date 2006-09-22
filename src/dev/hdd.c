@@ -1,4 +1,4 @@
-#include "include/hdd.h"
+#include "dev/hdd.h"
 
 void*   hdd_buf;
 

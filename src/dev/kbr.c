@@ -1,6 +1,6 @@
-#include "include/scan.h"
-#include "include/idt.h"
-#include "include/kbr.h"
+#include "scan.h"
+#include "idt.h"
+#include "kbr.h"
 
 #ifdef _FREEBSD
 
