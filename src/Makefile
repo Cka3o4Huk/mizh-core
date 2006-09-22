@@ -4,8 +4,16 @@ OBJECTS = startup.c mm.c core.c tty.c kbr.c dev/hdd.c idt.c st_lib.c debug.c cmd
 FLAGS = -ffreestanding -c
 W_ASM = nasmw
 ASM = nasm
-BUILD_DIR = obj
+OBJ_DIR = obj
 MAKER = gmake
+
+ifeq (${OS},Windows_NT)
+WINNT = yes
+else
+UNIX = yes
+endif
+
+SUBDIRS = dev
 
 all: core
 
@@ -15,22 +23,32 @@ clean_obj:
 
 .c.o:
 	@echo "###### Compiling file $< to $@"
-	@gcc ${FLAGS} -o ../${BUILD_DIR}/$@ ./$<
+	@gcc ${FLAGS} -o ../${OBJ_DIR}/$@ ./$<
 
 .asm.o: 
 	@echo "###### Compiling asm file... $@"	
-	@${ASM} -f bin -o ../${BUILD_DIR}/$@ $<
+	@${ASM} -f bin -o ../${OBJ_DIR}/$@ $<
 
 core: init_dir ${OBJECTS:.c=.o}	
-	ld -Ttext 0x200000 -o ../core $(addprefix ../${BUILD_DIR}/,${OBJECTS:.c=.o})
+	ld -Ttext 0x200000 -o ../core $(addprefix ../${OBJ_DIR}/,${OBJECTS:.c=.o})
 	objcopy ../core -O binary
 
 startup.o: startup.c
 
 init_dir: 
 	@echo "###### Initializing directories..."
-	@mkdir -p ../${BUILD_DIR}/
-	@mkdir -p ../${BUILD_DIR}/dev/
+ifdef WINNT
+	
+	mkdir ..\$(OBJ_DIR)
+	$(foreach dir,$(SUBDIRS),mkdir ..\$(OBJ_DIR)\$(dir))
+
+endif
+
+ifdef UNIX
+	mkdir -p ../${OBJ_DIR}
+	mkdir -p ../${OBJ_DIR}/dev/
+endif
+
 
 st_lib.o: st_lib.c
 
