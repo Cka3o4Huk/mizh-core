@@ -1,3 +1,7 @@
+/*
+ * MiZh: [22-09-2006] Useless code
+ */
+
 void load_daemon(){
 
 	int pointer;
