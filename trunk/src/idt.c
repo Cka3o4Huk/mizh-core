@@ -1,4 +1,4 @@
-#include "include/idt.h"
+#include "idt.h"
 
 w_dword kv;  
 w_dword curr_gdt_index;

@@ -1,6 +1,6 @@
 #include <stdarg.h>
-#include "include/errno.h"
-#include "include/st_lib.h"
+#include "errno.h"
+#include "st_lib.h"
 
 char cmp(char* str1,char* str2){
 	int i=0;

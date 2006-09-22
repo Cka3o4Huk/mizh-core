@@ -1,5 +1,5 @@
-#include "include/addr.h"
-#include "include/common.h"
+#include "addr.h"
+#include "common.h"
 
 /** Comment by Zhilin Mike 2-dec-2005 
 *   Reason:	Unknown old code
