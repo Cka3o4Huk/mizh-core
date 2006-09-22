@@ -2,7 +2,7 @@
  * MiZh: [22-09-2006] Useless code
  */
 
-#include "include/call_stack.h"
+#include "call_stack.h"
 
 w_stack_state* st_state;
 
