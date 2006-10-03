@@ -47,4 +47,13 @@
 #define ATA_INFO    0xEC
 #define ATA_READ    0x20
 
+void*   hdd_buf;
+#define ATA_BUFFER 	0xAE00
+#define ATA_BUFFER_SIZE 0x200
+
+#define ATA_CHANNEL_0 		0x1F0
+#define ATA_CHANNEL_1		0x170
+#define ATA_PRIMARY_DEVICE 	0x00
+#define ATA_SECOND_DEVICE 	0x10
+
 #endif /*HDD_H_*/

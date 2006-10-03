@@ -227,7 +227,7 @@ void div_zero()
     asm("movl 4(%%ebp),%%eax\n movl 8(%%ebp),%%bx\n":"=a"(eip),"=b"(cs));
 	
 	printf("Exception 0x00: Division by Zero\n");
-	printf("EIP = 0x%x\tCS = 0x%x",eip,cs);
+	printf("EIP = 0x%x  CS = 0x%x",eip,cs);
 	printf("\nStop machine!!!");
 	die();
 	asm("iret");

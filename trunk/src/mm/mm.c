@@ -31,12 +31,15 @@ void dec_mem(char* addr,int size){
 #define TBL_INDEX(t) ((t>>12)&0x3ff)
 
 /** 	
- * Kernel Address Space 0xC0000000-0xFFFFFFFF (3Gb - 4Gb)
+ * WRONG: Kernel Address Space 0xC0000000-0xFFFFFFFF (3Gb - 4Gb)
  **/
-#define KRN_VIRT_ADDR	0x00000000
-#define KRN_PHYS_ADDR	0x00200000
-#define KRN_CODE_SIZE	0x00200000
-#define KRN_DATA_SIZE	0x00200000	 
+#define KRN_VIRT_ADDR		0x00000000
+#define KRN_DATA_PHYS_DATA 	0x00000000
+#define KRN_DATA_ADDR		0x00000000
+#define KRN_DATA_SIZE		0x00200000	
+#define KRN_CODE_PHYS_ADDR	0x00200000
+#define KRN_CODE_ADDR		KRN_DATA_SIZE
+#define KRN_CODE_SIZE		0x00200000
 
 #define PRIV_USER	0x04
 #define PRIV_WRBL	0x02
@@ -53,9 +56,8 @@ static int init_table(u32 addr_virt,u32 size,u32 addr_phys,u32 *dir,unsigned int
 
 int init_memory(u32 *dir,u32 krn_table){
 	if(add_table(krn_table,KRN_VIRT_ADDR,dir)!=0) return -1;
-//	if(add_table(krn_table+4096,0,dir_entry)!=0) return;
-	if(init_table(KRN_DATA_SIZE,KRN_CODE_SIZE,KRN_PHYS_ADDR,dir,PRIV_PRST|PRIV_USER)!=0) return -2;
-	if(init_table(0,KRN_DATA_SIZE,0,dir,PRIV_PRST|PRIV_WRBL|PRIV_USER)!=0) return -3;
+	if(init_table(KRN_CODE_ADDR,KRN_CODE_SIZE,KRN_CODE_PHYS_ADDR,dir,PRIV_PRST|PRIV_USER)!=0) 			return -2;
+	if(init_table(KRN_DATA_ADDR,KRN_DATA_SIZE,KRN_DATA_PHYS_DATA,dir,PRIV_PRST|PRIV_WRBL|PRIV_USER)!=0) return -3;
 //	if(init_table(0,0x400000,0,dir_entry,PRIV_PRST|PRIV_WRBL)!=0) return;
 	return 0;
 }

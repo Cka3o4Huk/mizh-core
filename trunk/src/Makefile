@@ -1,6 +1,6 @@
 .SUFFIXES: .asm
 
-OBJECTS = startup.c mm/mm.c kernel/core.c tty.c dev/kbr.c dev/hdd.c idt.c lib/st_lib.c lib/debug.c cmd.c
+OBJECTS = startup.c mm/mm.c kernel/core.c tty.c dev/kbr.c dev/hdd.c idt.c lib/st_lib.c lib/debug.c cmd.c fs/fat16.c
 FLAGS = -ffreestanding -c
 W_ASM = nasmw
 ASM = nasm
@@ -14,7 +14,7 @@ else
 UNIX = yes
 endif
 
-SUBDIRS = dev mm kernel lib
+SUBDIRS = dev mm kernel lib fs
 
 all: core
 

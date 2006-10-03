@@ -27,6 +27,10 @@ void clear(){
 	cursor=0;
 }
 
+/*
+ * TODO: support tabulation
+ */
+
 void putchar(char c){
 	int i;
 	switch(c){
@@ -59,4 +63,13 @@ void puts(const char *s){
 	}
 }
 
-
+void puts_size(const char *s, int size){
+	int ind;
+	ind = 0;
+	ind = size;
+	while((*s) && (ind > 0)){
+		putchar(*s);
+		s++;
+		ind--;
+	}
+}
