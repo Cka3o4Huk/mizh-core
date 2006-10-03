@@ -164,6 +164,9 @@ void puthexb(unsigned char byte){
 }
 
 void vprintf(const char* fmt,va_list args){
+	char* ch;
+	int size;
+	
 	while(*fmt){
 		switch(*fmt){
 		case '%':
@@ -172,6 +175,11 @@ void vprintf(const char* fmt,va_list args){
 				case 's':
 					puts(va_arg(args,char *));
 					break;
+				case 'S':
+				    ch = va_arg(args,char *);
+				    size = va_arg(args,unsigned int);
+					puts_size(ch,size);
+					break;					
 				case 'c':
 					putchar(va_arg(args,unsigned int));
 					break;

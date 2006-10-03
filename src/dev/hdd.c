@@ -1,7 +1,5 @@
 #include "dev/hdd.h"
 
-void*   hdd_buf;
-
 /*
  * Registers' cache for writing
  */
@@ -97,17 +95,34 @@ w_dword ata_detect(w_word port,w_byte sel){
     return 0;  
 }
 
+void ata_init_regs(	w_byte  r_drive,
+						w_byte  r_sect_count, 
+						w_byte  r_sect_number,
+						w_byte  r_cyl_low,
+						w_byte  r_cyl_high
+						)
+{
+	reg_drive = r_drive;
+	reg_sect_count = r_sect_count;
+	reg_sect_number = r_sect_number;
+	reg_cyl_low = r_cyl_low;
+	reg_cyl_high = r_cyl_high;
+	is_reg_init = 1;
+}
+
 w_dword ata_cmd(w_byte cmd,w_word port,w_byte sel){ 
-    if(is_reg_init==0) return ERROR_COMMON;        
+    if(is_reg_init==0) return ERROR_COMMON;   
+    				 
     outportb(port+0x06,reg_drive|sel);
     outportb(port+0x02,reg_sect_count);   
     outportb(port+0x03,reg_sect_number);      
     outportb(port+0x04,reg_cyl_low);    
     outportb(port+0x05,reg_cyl_high); 
     outportb(port+0x07,cmd);  
+    is_reg_init = 0;
 }
 
-w_dword ata_read(w_dword port,void* buf,w_dword size){
+w_dword ata_read(w_dword port,void* hdd_buf,w_dword size){
     w_dword index;
     w_byte  status;
     w_word  temp;
@@ -117,15 +132,42 @@ w_dword ata_read(w_dword port,void* buf,w_dword size){
 
     while((status & STATUS_DRQ)!=0){
         temp = inportw(port);
-        *(((w_word*)buf)+index) = temp;
+        *(((w_word*)hdd_buf)+index) = temp;
         index++;
 
         while((status = inportb(port+0x07))&STATUS_BUSY!=0){
+        	//TODO: error handling
         }  
         status = inportb(port+0x07);     
         if(index*2>size) return 0x1;
     }
     return 0;
+}
+
+w_dword ata_read_data(w_word port, w_byte sel, w_byte  r_sect_number, w_byte  r_cyl_low, w_byte  r_cyl_high ){
+
+    w_dword time;
+    
+    hdd_buf  = (void*)ATA_BUFFER;
+	time = 500000;
+	
+    if((time = wait_non_busy(port,time)) == 0){
+    	DEBUG("WAIT_NON_BUSY: error \n");
+    	return ERROR_ATA;
+    }
+    
+    ata_init_regs(0xa0,0x1,0x1,0x0,0x0);    
+    
+    if(ata_cmd(ATA_READ,port,sel)==ERROR_COMMON){
+    	DEBUG("ATA_CMD: error\n");
+    }
+    
+    if((time = wait_drq(port,time)) == 0){
+    	DEBUG("WAIT_DRQ: error\n");
+    	return ERROR_ATA;
+    }    
+    
+    ata_read(port,hdd_buf,ATA_BUFFER_SIZE);			
 }
 
 w_dword ata_info(w_word port,w_byte sel){
@@ -140,36 +182,52 @@ w_dword ata_info(w_word port,w_byte sel){
     w_word  hds;
     w_word  sct;
     
-    void*   buf;
+	/*
+	 * hdd_buffer for reading data
+	 * Address: 0xAE00
+	 * Size: 	0x200
+	 */
+    
 
-    buf  = (void*)0xAE00;
+    hdd_buf  = (void*)ATA_BUFFER;
+    
     time = 500000;
     
     time = wait_non_busy(port,time);
-    if(time == 0) return ERROR_ATA;
+    if(time == 0){
+    	DEBUG("WAIT_NON_BUSY: error \n");
+    	return ERROR_ATA;
+    }
     
-    ata_cmd(ATA_INFO,port,sel);
+    ata_init_regs(0xa0,0x1,0x1,0x0,0x0);    
     
-    time = wait_drq(port,time);
-    if(time == 0) return ERROR_ATA;
+    if(ata_cmd(ATA_INFO,port,sel)==ERROR_COMMON){
+    	DEBUG("ATA_CMD: error\n");
+    }
     
-    ata_read(port,buf,0x200);
+    time = wait_drq(port,time);    
+    if(time == 0){
+    	DEBUG("WAIT_DRQ: error\n");
+    	return ERROR_ATA;
+    }    
+    
+    ata_read(port,hdd_buf,ATA_BUFFER_SIZE);
     
     for(index=0;index<20;index++){
-        tmp=*(((w_word*)buf)+index+27);
+        tmp=*(((w_word*)hdd_buf)+index+27);
         *(vnd+index*2+1)=tmp&0x00FF;
         *(vnd+index*2)=(tmp&0xFF00)>>8;
     }
     
-    cyl = *((w_word*)(buf)+1);
-    hds = *((w_word*)(buf)+3);
-    sct = *((w_word*)(buf)+6);
+    cyl = *((w_word*)(hdd_buf)+1);
+    hds = *((w_word*)(hdd_buf)+3);
+    sct = *((w_word*)(hdd_buf)+6);
     
     printf("Status Register:        %x \n",inportb(port+0x07));
-    printf("General configuration:  %x \n",*((w_word*)(buf)));
-    printf("Vendor:    %s \n",vnd);
-    printf("Size:   %i/%i/%i total= %i",cyl,hds,sct,cyl*hds*sct);
-    printf("HDD_Test:       Complete \n");
+    printf("General configuration:  %x \n",*((w_word*)(hdd_buf)));
+    printf("Vendor:                 %s \n",vnd);
+    printf("Size:                   %i/%i/%i total= %i \n",cyl,hds,sct,cyl*hds*sct);
+    printf("HDD_Test:               Complete \n");
     return 0;    
 }
 
@@ -189,21 +247,13 @@ w_dword test_hdd(w_word port,w_byte sel){
     
 
     while(((status = inportb(port+0x07)) & STATUS_BUSY)!=0){
-//        printf("Log: <><HDD><> Status = 0x%x Timeout=%i result = 0x%x \n",status,timeout,((status = inportb(0x1f7)) & STATUS_BUSY));
         if(timeout==0) return 0xFFFFFFFF;
         timeout--;
     }
-    
-//    printf("Log: <><HDD><> Status = 0x%x Timeout=%i\n",status,timeout);
-//    printf("non-Busy state: Continue work \n");
 
-    outportb(port+0x06,0xa0|sel);
-    outportb(port+0x02,0x1);   
-    outportb(port+0x03,0x1);      
-    outportb(port+0x04,0x0);    
-    outportb(port+0x05,0x0); 
-    outportb(port+0x07,0x20);         
-
+	ata_init_regs(0xa0,0x1,0x1,0x0,0x0);
+	ata_cmd(ATA_READ,port,sel);
+	
 /*    
     //Select primary channel
     outportb(0x1f6,0xa0);  
@@ -216,8 +266,8 @@ w_dword test_hdd(w_word port,w_byte sel){
     //Run 'Identify Drive' command  
     outportb(0x1f7,0xEC); 
 */    
-//    printf("Waiting buffers...\n");
-    //Waiting buffers
+//    printf("Waiting hdd_buffers...\n");
+    //Waiting hdd_buffers
     while((status = inportb(port+0x07))&STATUS_DRQ==0){
 //        printf("Log: <><HDD><> Status = 0x%x Timeout=%i\n",status,timeout);
         if(timeout==0) return 0xFFFFFFFF;
@@ -239,6 +289,7 @@ w_dword test_hdd(w_word port,w_byte sel){
             printf("0");
         }            
         while((status = inportb(port+0x07))&STATUS_BUSY!=0){
+        	//TODO: Leak place
         }  
         status = inportb(port+0x07);     
     }    
