@@ -122,6 +122,52 @@ w_dword ata_cmd(w_byte cmd,w_word port,w_byte sel){
     is_reg_init = 0;
 }
 
+w_dword ata_worker(ata_job_struct job){
+	
+	w_dword time;
+		
+	time = ATA_TOTAL_TIME;
+	
+	/*
+	 * Wait free bus
+	 */
+	 
+	if((time = wait_non_busy(port,time)) == 0){
+    	DEBUG("WAIT_NON_BUSY: error \n");
+    	return ERROR_ATA;
+    }
+    
+    /*
+     * Set DEV bit to D/H
+     */
+	
+	outportb(job->port+0x06,0xa0|job->device_id);      
+
+    /*
+     * Wait Drive Ready 
+     */
+    
+    if((time = wait_drq(job->port,time)) == 0){
+    	DEBUG("WAIT_DRQ: error\n");
+    	return ERROR_ATA;
+    }  
+    
+    outportb(port+0x02,job->sect_count);   
+    outportb(port+0x03,job->sect_number);      
+    outportb(port+0x04,job->cyl_low);    
+    outportb(port+0x05,job->cyl_high); 
+    outportb(port+0x07,job->command);  
+    
+    /*
+     * TODO: Make job
+     */  
+           
+    time = ATA_TOTAL_TIME - time;
+    
+    DEBUG("Worked time: %s", time);        
+}
+	
+	
 w_dword ata_read(w_dword port,void* hdd_buf,w_dword size){
     w_dword index;
     w_byte  status;

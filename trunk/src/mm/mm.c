@@ -31,7 +31,7 @@ void dec_mem(char* addr,int size){
 #define TBL_INDEX(t) ((t>>12)&0x3ff)
 
 /** 	
- * WRONG: Kernel Address Space 0xC0000000-0xFFFFFFFF (3Gb - 4Gb)
+ * TODO: Kernel Address Space 0xC0000000-0xFFFFFFFF (3Gb - 4Gb)
  **/
 #define KRN_VIRT_ADDR		0x00000000
 #define KRN_DATA_PHYS_DATA 	0x00000000
