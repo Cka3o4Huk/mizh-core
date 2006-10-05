@@ -56,4 +56,27 @@ void*   hdd_buf;
 #define ATA_PRIMARY_DEVICE 	0x00
 #define ATA_SECOND_DEVICE 	0x10
 
+#define ATA_TOTAL_TIME	500000
+
+/*
+ * Command types
+ */
+
+#define ATA_CMD_ND
+#define ATA_CMD_PI
+#define ATA_CMD_PO
+#define ATA_CMD_DMA
+
+typedef struct _ata_job_struct{
+	w_dword port;
+	w_byte	device_id;
+	w_byte  command;
+	w_byte	cmd_type;
+	w_byte	sect_count;
+	w_byte  sect_number;
+	w_byte  cyl_low;
+	w_byte  cyl_high;	
+}ata_job_struct;
+
+
 #endif /*HDD_H_*/
