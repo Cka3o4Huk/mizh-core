@@ -1,0 +1,19 @@
+ 
+www.intel.com
+
+Very good site with many documents, data sheets, white papers and their same.
+If you want to develop with new technologies, this is the correct site.
+
+www.amd.com
+
+Also a good site where you get the famous amd documents about the 64 bit technologie.
+Documents from amd are very good written and easy to read.
+
+www.osdever.net
+
+osdever.net is a well-known OS development website with a huge collection of documents.
+
+www.lowlevel.net.tc
+
+A good OS development website on german, with a good forum with many (good) developers.
+Peter Kleissner had learned there how to start with OS developing.  
