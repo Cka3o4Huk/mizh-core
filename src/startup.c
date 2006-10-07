@@ -36,9 +36,7 @@ void _start(){
 		or  $0x80000000, %%eax;\
 		movl %%eax,%%cr0": :"r"(dir));	
 
-	printf("Ok\n");	
-
-	while(1){};
+	printf("Ok\n");
 
 	k_main();
 }

@@ -10,6 +10,7 @@ char attr;
 char* video_buf=(char*)VIDEO_RAM;
 
 void init_tty(){
+	video_buf=VIDEO_RAM; 
 	cursor=0;
 	attr=7;
 }
@@ -22,7 +23,7 @@ void clear(){
 	int i;
 
 	for(i=0;i<VIDEO_HEIGHT*VIDEO_WIDTH;i++){
-		*(unsigned short*)(video_buf+i*2)=0x0720;
+		*(unsigned short*)(VIDEO_RAM+i*2)=0x0720;
 	}
 	cursor=0;
 }
