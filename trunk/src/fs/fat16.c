@@ -1,5 +1,5 @@
 #include "addr.h"
-#include "dev/hdd.h"
+#include "dev/ata.h"
 #include "fs/fat16.h"
 
 void read_fat16(){
