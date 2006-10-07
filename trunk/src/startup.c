@@ -8,8 +8,12 @@ void _start(){
 	*/         
 	unsigned long *dir;
 	int status;
+	int i;
 
+	//for(i=0x0;i<80*25;i++)	*(unsigned short*)(0xb8000+i*2)=0x0720;
+	
 	init_tty();
+
 	clear();
 
 	printf("Memory init...");
@@ -25,12 +29,16 @@ void _start(){
 		while(1);
 	}
 
+	for(i=0;i<10000000;i++){};
+
 	asm("	movl %0, %%cr3;\
 		movl %%cr0, %%eax;\
 		or  $0x80000000, %%eax;\
 		movl %%eax,%%cr0": :"r"(dir));	
 
 	printf("Ok\n");	
+
+	while(1){};
 
 	k_main();
 }

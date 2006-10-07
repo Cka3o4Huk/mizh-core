@@ -68,7 +68,7 @@ void*   hdd_buf;
 #define ATA_CMD_DMA
 
 typedef struct _ata_job_struct{
-	w_dword port;
+	w_word  port;
 	w_byte	device_id;
 	w_byte  command;
 	w_byte	cmd_type;
