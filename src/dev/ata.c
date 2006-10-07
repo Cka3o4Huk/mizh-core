@@ -1,4 +1,4 @@
-#include "dev/hdd.h"
+#include "dev/ata.h"
 
 /*
  * Registers' cache for writing
@@ -76,7 +76,13 @@ w_dword ata_detect(w_word port,w_byte sel){
     if(status&STATUS_ERR!=0){
 
         inportb(port+0x01);
+        
+       	DEBUG("*");
+        
         status = inportb(port+0x07);
+
+		DEBUG("*");
+
         if(status&&STATUS_ERR!=0){
             //can't corrected
             //TODO:
@@ -89,9 +95,10 @@ w_dword ata_detect(w_word port,w_byte sel){
     outportb(port+0x03,0xAA);
     
     if((inportb(port+0x02)!=0x55)||(inportb(port+0x03)!=0xAA)){
-        //printf("HDD: Port %x isn't detected\n",port);
+        printf("HDD: Port %x isn't detected\n",port);
         return ERROR_COMMON;
     } 
+    
     return 0;  
 }
 
@@ -122,7 +129,7 @@ w_dword ata_cmd(w_byte cmd,w_word port,w_byte sel){
     is_reg_init = 0;
 }
 
-w_dword ata_worker(ata_job_struct job){
+w_dword ata_worker(ata_job_struct* job){
 	
 	w_dword time;
 		
@@ -132,7 +139,7 @@ w_dword ata_worker(ata_job_struct job){
 	 * Wait free bus
 	 */
 	 
-	if((time = wait_non_busy(port,time)) == 0){
+	if((time = wait_non_busy(job->port,time)) == 0){
     	DEBUG("WAIT_NON_BUSY: error \n");
     	return ERROR_ATA;
     }
@@ -152,11 +159,11 @@ w_dword ata_worker(ata_job_struct job){
     	return ERROR_ATA;
     }  
     
-    outportb(port+0x02,job->sect_count);   
-    outportb(port+0x03,job->sect_number);      
-    outportb(port+0x04,job->cyl_low);    
-    outportb(port+0x05,job->cyl_high); 
-    outportb(port+0x07,job->command);  
+    outportb(job->port+0x02,job->sect_count);   
+    outportb(job->port+0x03,job->sect_number);      
+    outportb(job->port+0x04,job->cyl_low);    
+    outportb(job->port+0x05,job->cyl_high); 
+    outportb(job->port+0x07,job->command);  
     
     /*
      * TODO: Make job
@@ -176,6 +183,8 @@ w_dword ata_read(w_dword port,void* hdd_buf,w_dword size){
     index = 0;
     status = inportb(port+0x07);
 
+	DEBUG("Reading data...");
+
     while((status & STATUS_DRQ)!=0){
         temp = inportw(port);
         *(((w_word*)hdd_buf)+index) = temp;
@@ -187,6 +196,9 @@ w_dword ata_read(w_dword port,void* hdd_buf,w_dword size){
         status = inportb(port+0x07);     
         if(index*2>size) return 0x1;
     }
+    
+    DEBUG("Ok\n");   
+    
     return 0;
 }
 
@@ -232,8 +244,7 @@ w_dword ata_info(w_word port,w_byte sel){
 	 * hdd_buffer for reading data
 	 * Address: 0xAE00
 	 * Size: 	0x200
-	 */
-    
+	 */    
 
     hdd_buf  = (void*)ATA_BUFFER;
     
@@ -256,7 +267,7 @@ w_dword ata_info(w_word port,w_byte sel){
     	DEBUG("WAIT_DRQ: error\n");
     	return ERROR_ATA;
     }    
-    
+            
     ata_read(port,hdd_buf,ATA_BUFFER_SIZE);
     
     for(index=0;index<20;index++){

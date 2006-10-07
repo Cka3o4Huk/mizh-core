@@ -22,7 +22,7 @@ void clear(){
 	int i;
 
 	for(i=0;i<VIDEO_HEIGHT*VIDEO_WIDTH;i++){
-		*(video_buf+i*2)=' ';
+		*(unsigned short*)(video_buf+i*2)=0x0720;
 	}
 	cursor=0;
 }
